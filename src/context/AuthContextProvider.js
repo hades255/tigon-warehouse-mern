@@ -8,9 +8,17 @@ import {
   logout as logoutAction,
 } from "../redux/reducers/authReducer";
 import AXIOS from "../helpers/axios";
+import { initChat, receiveMessage } from "../redux/reducers/chat";
 
 const socket = io("http://localhost:3000");
 socket.emit("message", { type: "start" });
+
+socket.on("new-chat", (data) => {
+  dispatch(receiveMessage(data));
+});
+socket.on("chat", (data) => {
+  dispatch(initChat(data));
+});
 
 export const AuthContext = createContext();
 

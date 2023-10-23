@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   UncontrolledDropdown,
   DropdownItem,
@@ -10,26 +10,58 @@ import {
 import moment from "moment/moment";
 import MyInput from "../../form/MyInput";
 import { stringToAvatar, stringToColor } from "../../../helpers/string";
-import { users } from "../../../helpers/fakedata";
+import { AuthContext } from "../../../context/AuthContextProvider";
+import { dispatch, useSelector } from "../../../redux/store";
+import { sendMessage } from "../../../redux/reducers/chat";
+import AXIOS from "../../../helpers/axios";
 
-const Chat = ({ user, messages }) => {
+const Chat = ({ user, packageId }) => {
+  const socket = useContext(AuthContext).socket;
+  const messages = useSelector((state) =>
+    state.chat.list.filter((item) => item.package === packageId)
+  );
   const [message, setMessage] = useState("");
   const [opponent, setOpponent] = useState(null);
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await AXIOS.get(`/api/users/all`);
+        setUsers(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, []);
 
   const handleMessageSubmit = useCallback(
     (e) => {
       e.preventDefault();
       if (opponent) {
-        messages.push({
+        socket.emit("message", {
+          type: "chat",
+          data: {
+            msg: message,
+            from: user,
+            to: opponent,
+            date: new Date().toString(),
+            package: packageId,
+          },
+        });
+      }
+      dispatch(
+        sendMessage({
           msg: message,
           from: user,
           to: opponent,
-          date: new Date(),
-        });
-        setMessage("");
-      }
+          date: new Date().toString(),
+          package: packageId,
+        })
+      );
+      setMessage("");
     },
-    [message, opponent, user, messages]
+    [message, opponent, user, socket, packageId]
   );
 
   const handleInputChange = useCallback(
@@ -45,7 +77,12 @@ const Chat = ({ user, messages }) => {
             <UserItem user={opponent} />
           </DropdownToggle>
           <DropdownMenu>
-            <UsersList select={setOpponent} current={opponent} me={user} users={users} />
+            <UsersList
+              select={setOpponent}
+              current={opponent}
+              me={user}
+              users={users}
+            />
           </DropdownMenu>
         </UncontrolledDropdown>
         <div>Datetime</div>
@@ -86,7 +123,7 @@ const MessageItem = ({ user, message }) => {
         <div className="mt-2 mb-2 d-flex justify-content-start">
           <Media className="chat-item">
             <div className="flex-shrink-0 mr-3">
-              <UserAvatar user={message.from} size={70} />
+              <UserAvatar user={message.from} size={50} />
             </div>
             <div className="flex-grow-1 rounded border shadow p-1">
               <h5 className="mt-2 mb-1">{message.from.name}</h5>
@@ -113,7 +150,7 @@ const MessageItem = ({ user, message }) => {
               <span>{message.msg}</span>
             </div>
             <div className="flex-shrink-0">
-              <UserAvatar user={message.to} size={70} />
+              <UserAvatar user={message.to} size={50} />
             </div>
           </Media>
         </div>
@@ -122,7 +159,7 @@ const MessageItem = ({ user, message }) => {
   );
 };
 
-const UsersList = ({ current, me, select, users }) => {
+const UsersList = ({ current, me, select, users = [] }) => {
   return (
     <>
       <UserListItem select={select} />

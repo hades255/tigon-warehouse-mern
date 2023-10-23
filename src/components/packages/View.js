@@ -431,7 +431,10 @@ const ViewPackage = () => {
                     </CardBody>
                   </Col>
                   <Col md={6} sm={12}>
-                    <Chat user={user} messages={package_.chat} />
+                    <Chat
+                      user={user}
+                      packageId={packageId}
+                    />
                   </Col>
                 </div>
               </Card>
