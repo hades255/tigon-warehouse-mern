@@ -85,7 +85,7 @@ const Chat = ({ user, packageId }) => {
             />
           </DropdownMenu>
         </UncontrolledDropdown>
-        <div>Datetime</div>
+        {/* <div>Datetime</div> */}
       </div>
       <div className="border"></div>
       <div className="d-flex flex-column chat-panel p-3 shadow">
@@ -150,7 +150,7 @@ const MessageItem = ({ user, message }) => {
               <span>{message.msg}</span>
             </div>
             <div className="flex-shrink-0">
-              <UserAvatar user={message.to} size={50} />
+              <UserAvatar user={message.from} size={50} />
             </div>
           </Media>
         </div>

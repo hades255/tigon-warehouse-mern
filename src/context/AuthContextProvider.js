@@ -10,7 +10,7 @@ import {
 import AXIOS from "../helpers/axios";
 import { initChat, receiveMessage } from "../redux/reducers/chat";
 
-const socket = io("http://localhost:3000");
+const socket = io(process.env.SERVER_URL || "http://localhost:3000");
 socket.emit("message", { type: "start" });
 
 socket.on("new-chat", (data) => {

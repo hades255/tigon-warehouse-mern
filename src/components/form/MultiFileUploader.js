@@ -20,7 +20,7 @@ const MultiFileUploader = ({ getpath, setUploading, setImagesPath }) => {
       .forEach((file) => {
         formData.append("files", file);
       });
-    fetch("http://localhost:3000/api/upload", {
+    fetch((process.env.SERVER_URL || "http://localhost:3000") + "/api/upload", {
       method: "POST",
       body: formData,
     })

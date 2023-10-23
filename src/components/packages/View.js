@@ -18,7 +18,6 @@ import {
 import moment from "moment";
 import MyInput from "../form/MyInput";
 import Chat, { UserItem } from "./chat";
-// import { users } from "../../helpers/fakedata";
 import { useSelector } from "../../redux/store";
 import AXIOS from "../../helpers/axios";
 import "../form/MultiFileUploader.css";
@@ -103,6 +102,36 @@ const ViewPackage = () => {
         ...state,
         images: state.images.filter((item) => item !== img),
       });
+    },
+    [state]
+  );
+
+  const handleSingleImageUpload = useCallback(
+    (event) => {
+      const file = event.target.files[0];
+      const formData = new FormData();
+      formData.append("files", file);
+      fetch(
+        (process.env.SERVER_URL || "http://localhost:3000") + "/api/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          // Handle the response from the server
+          if (data.files) {
+            setState({
+              ...state,
+              images: [...state.images, data.files[0].filename],
+            });
+          }
+        })
+        .catch((error) => {
+          // Handle any errors that occur during the upload process
+          console.error(error);
+        });
     },
     [state]
   );
@@ -393,7 +422,11 @@ const ViewPackage = () => {
                             <div>
                               <img
                                 alt="package"
-                                src={`http://localhost:3000/uploads/${item}`}
+                                src={
+                                  (process.env.SERVER_URL ||
+                                    "http://localhost:3000") +
+                                  `/uploads/${item}`
+                                }
                                 className="rounded border"
                                 onClick={() => showImage(key)}
                               />
@@ -406,6 +439,25 @@ const ViewPackage = () => {
                             </div>
                           </div>
                         ))}
+                        <div className="col-lg-3 col-md-4 col-sm-4 col-6 p-1 d-flex">
+                          <div className="custom-file w-100 h-100">
+                            <input
+                              hidden
+                              type="file"
+                              className="custom-file-input"
+                              id="file-upload"
+                              onChange={handleSingleImageUpload}
+                            />
+                            <label
+                              className="cursor-pointer custom-file-label bg-transparent text-white"
+                              htmlFor="file-upload"
+                              data-browse="Choose"
+                              title="Click here to select images"
+                            >
+                              +
+                            </label>
+                          </div>
+                        </div>
                         <Modal
                           isOpen={showModal}
                           toggle={closeModal}
@@ -414,7 +466,11 @@ const ViewPackage = () => {
                         >
                           <ModalBody className="p-0">
                             <img
-                              src={`http://localhost:3000/uploads/${selectedImage}`}
+                              src={
+                                (process.env.SERVER_URL ||
+                                  "http://localhost:3000") +
+                                `/uploads/${selectedImage}`
+                              }
                               alt="Preview"
                               className="rounded img-thumbnail"
                               onClick={() => closeModal()}
@@ -424,17 +480,14 @@ const ViewPackage = () => {
                       </div>
                       {(package_.recorder === user._id ||
                         user.role === "admin") && (
-                        <Button onClick={handleRemove} className="btn-danger">
+                        <Button onClick={handleRemove} className="mt-5 btn-danger">
                           Remove Package
                         </Button>
                       )}
                     </CardBody>
                   </Col>
                   <Col md={6} sm={12}>
-                    <Chat
-                      user={user}
-                      packageId={packageId}
-                    />
+                    <Chat user={user} packageId={packageId} />
                   </Col>
                 </div>
               </Card>
