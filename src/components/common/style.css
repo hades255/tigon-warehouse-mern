@@ -1,0 +1,22 @@
+.sortable:hover {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.sortable {
+  position: relative;
+  cursor: pointer;
+}
+
+.sortable::after {
+  content: "";
+  position: absolute;
+  right: -15px;
+  opacity: 0.3;
+}
+
+.sortable.asc::after {
+  content: " ▲";
+}
+.sortable.desc::after {
+  content: " ▼";
+}

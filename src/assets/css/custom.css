@@ -1,0 +1,20 @@
+.middle-td td {
+  vertical-align: middle;
+}
+
+.page-header {
+  max-height: none !important;
+}
+
+.chat-panel {
+  height: 70vh;
+  overflow-y: scroll;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.navbar:not(.navbar-transparent) a:not(.dropdown-item):not(.btn) {
+  color: white;
+}

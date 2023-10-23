@@ -1,0 +1,27 @@
+.remove-button {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  padding-top: 5px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  transition: all ease 0.5s;
+  color: white;
+}
+.remove-button:hover {
+  border-radius: 30%;
+  background-color: rgba(225, 225, 225, 0.5);
+  color: darkred;
+}
+
+.custom-file-label {
+  border-radius: 20px;
+  border-color: rgba(255, 255, 255, 0.7);
+}
+.custom-file-label::after {
+  display: none;
+}
